@@ -53,53 +53,46 @@ func record(student *[]students, reader *bufio.Reader) {
 	id := max_id(*student) + 1
 
 	fmt.Print("Укажите имя студента: ")
-	name, _ := reader.ReadString('\n')
-	name = strings.TrimSpace(name) // Удаляем символ переноса строки
+	name := readLine(reader)
+	for err := checkText(name); err != nil; err = checkText(name) {
+		fmt.Printf("Ошибка: %v. Введите имя еще раз: ", err)
+		name = readLine(reader)
+	}
 
 	fmt.Print("Укажите дату рождения студента в формате ДД.ММ.ГГГГ: ")
-	data, _ := reader.ReadString('\n')
-	data = strings.TrimSpace(data)
+	data := readLine(reader)
 	for !is_valid_date(data) {
 		fmt.Print("Ошибка ввода даты. Введите еще раз (ДД.ММ.ГГГГ): ")
-		data, _ = reader.ReadString('\n')
-		data = strings.TrimSpace(data)
+		data = readLine(reader)
 	}
 
 	fmt.Print("Укажите институт студента: ")
-	inst, _ := reader.ReadString('\n')
-	inst = strings.TrimSpace(inst)
+	inst := readLine(reader)
+	for err := checkText(inst); err != nil; err = checkText(inst) {
+		fmt.Printf("Ошибка: %v. Введите институт еще раз: ", err)
+		inst = readLine(reader)
+	}
 
 	fmt.Print("Укажите стипендию студента: ")
-	stiStr, _ := reader.ReadString('\n')
-	stiStr = strings.TrimSpace(stiStr)
+	stiStr := readLine(reader)
 	sti, err := strconv.ParseFloat(stiStr, 32)
 	for err != nil || sti < 0 {
 		fmt.Print("Ошибка ввода стипендии. Введите еще раз неотрицательное число: ")
-		stiStr, _ = reader.ReadString('\n')
-		stiStr = strings.TrimSpace(stiStr)
+		stiStr = readLine(reader)
 		sti, err = strconv.ParseFloat(stiStr, 32)
 	}
 	STI := float32(sti)
 	fmt.Print("Укажите средний балл студента: ")
-	gpaStr, _ := reader.ReadString('\n')
-	gpaStr = strings.TrimSpace(gpaStr)
+	gpaStr := readLine(reader)
 	gpa, err := strconv.ParseFloat(gpaStr, 32)
 	for err != nil || gpa < 2 || gpa > 5 {
 		fmt.Print("Ошибка ввода среднего балла. Введите число от 2 до 5: ")
-		gpaStr, _ = reader.ReadString('\n')
-		gpaStr = strings.TrimSpace(gpaStr)
+		gpaStr = readLine(reader)
 		gpa, err = strconv.ParseFloat(gpaStr, 32)
 	}
 	GPA := float32(gpa)
 	*student = append(*student, students{id, name, data, inst, STI, GPA})
-
-	f, err := os.OpenFile("Base.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		fmt.Println("Ошибка записи в файл:", err)
-		return
-	}
-	defer f.Close()
-	fmt.Fprintf(f, "%d/%s/%s/%s/%.2f/%.2f\n", id, name, data, inst, sti, GPA)
+	fmt.Printf("Студент с ID %d добавлен. Не забудьте сохранить изменения (пункт 5).\n", id)
 }
 
 // функция, которая сортирует слайс студентов по среднему баллу по убыванию
@@ -262,7 +255,7 @@ func main() {
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		fmt.Println("Для начала работы пожалуйста, нажмите Enter...")
-		reader.ReadString('\n')
+		readLine(reader)
 		clear_screen()
 
 		fmt.Println("Меню команд:")
@@ -275,11 +268,14 @@ func main() {
 		fmt.Println("7 - Показать студентов со стипендией выше средней")
 		fmt.Println("8 - Изменить данные студента")
 		fmt.Println("9 - Удалить студента")
+		fmt.Println("11 - Отчёт в файл: топ-10 по среднему баллу")
+		fmt.Println("12 - Отчёт в файл: стипендия выше средней")
+		fmt.Println("13 - Отчёт в файл: студенты выбранного института")
+		fmt.Println("14 - Отчёт в файл: сводка по институтам")
 		fmt.Println("0 - Завершить работу")
 		fmt.Println("Выберите пункт из меню управления: ")
 
-		input, _ := reader.ReadString('\n')
-		input = strings.TrimSpace(input)
+		input := readLine(reader)
 
 		a, err := strconv.Atoi(input)
 		if err != nil {
@@ -302,8 +298,7 @@ func main() {
 			save_to_file(all_students)
 		case 6:
 			fmt.Print("Введите институт: ")
-			inst, _ := reader.ReadString('\n')
-			inst = strings.TrimSpace(inst)
+			inst := readLine(reader)
 			print_all(filter_by_institute(all_students, inst))
 		case 7:
 			fmt.Printf("Средняя стипендия: %.2f\n", average_stipend(all_students))
@@ -312,8 +307,7 @@ func main() {
 			fmt.Println("Список всех студентов:")
 			print_all(all_students)
 			fmt.Println("\nВведите ID студента")
-			input, _ := reader.ReadString('\n')
-			input = strings.TrimSpace(input)
+			input := readLine(reader)
 
 			check_id, err := strconv.Atoi(input)
 			if err != nil {
@@ -330,8 +324,7 @@ func main() {
 			fmt.Println("Список всех студентов:")
 			print_all(all_students)
 			fmt.Print("\nВведите ID студента для удаления: ")
-			input, _ := reader.ReadString('\n')
-			input = strings.TrimSpace(input)
+			input := readLine(reader)
 
 			del_id, err := strconv.Atoi(input)
 			if err != nil {
@@ -343,6 +336,20 @@ func main() {
 				continue
 			}
 			fmt.Printf("Студент с ID %d удален. Не забудьте сохранить изменения (пункт 5).\n", del_id)
+		case 11:
+			err := ReportTop(all_students, 10, reportTopFile)
+			printReportResult(reportTopFile, err)
+		case 12:
+			err := ReportAboveAverage(all_students, reportAboveAvgFile)
+			printReportResult(reportAboveAvgFile, err)
+		case 13:
+			fmt.Print("Введите институт: ")
+			inst := readLine(reader)
+			err := ReportByInstitute(all_students, inst, reportInstituteFile)
+			printReportResult(reportInstituteFile, err)
+		case 14:
+			err := ReportInstitutesSummary(all_students, reportSummaryFile)
+			printReportResult(reportSummaryFile, err)
 		default:
 			fmt.Println("Нет такого пункта меню!")
 		}

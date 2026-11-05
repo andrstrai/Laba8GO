@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"strconv"
-	"strings"
 )
 
 func StudentByID(students_list []students, id int) (*students, error) {
@@ -31,8 +30,7 @@ func ChangeStudent(student *students, reader *bufio.Reader) {
 		fmt.Println("4 - стипендия")
 		fmt.Println("5 - средний балл")
 		fmt.Println("0 - завершить изменения")
-		input, _ := reader.ReadString('\n')
-		input = strings.TrimSpace(input)
+		input := readLine(reader)
 
 		num_menu, err := strconv.Atoi(input)
 		if err != nil {
@@ -41,65 +39,61 @@ func ChangeStudent(student *students, reader *bufio.Reader) {
 		}
 		switch num_menu {
 		case 0:
+			fmt.Println("Изменения внесены. Не забудьте сохранить их в файл (пункт 5).")
 			return
 		case 1:
 			fmt.Print("Укажите имя студента: ")
-			name, _ := reader.ReadString('\n')
-			name = strings.TrimSpace(name)
-			if name == "" {
-				fmt.Println("Имя не может быть пустым!")
+			name := readLine(reader)
+			if err := checkText(name); err != nil {
+				fmt.Println("Ошибка:", err)
 				fmt.Println("Для продолжения работы пожалуйста, нажмите Enter...")
-				reader.ReadString('\n')
+				readLine(reader)
 				clear_screen()
 				continue
 			}
 			student.name = name
 		case 2:
 			fmt.Print("Укажите дату рождения студента в формате ДД.ММ.ГГГГ: ")
-			data, _ := reader.ReadString('\n')
-			data = strings.TrimSpace(data)
+			data := readLine(reader)
 			if !is_valid_date(data) {
 				fmt.Println("Ошибка ввода даты. Введите еще раз (ДД.ММ.ГГГГ):")
 				fmt.Println("Для продолжения работы пожалуйста, нажмите Enter...")
-				reader.ReadString('\n')
+				readLine(reader)
 				clear_screen()
 				continue
 			}
 			student.databirthday = data
 		case 3:
 			fmt.Print("Укажите институт студента: ")
-			inst, _ := reader.ReadString('\n')
-			inst = strings.TrimSpace(inst)
-			if inst == "" {
-				fmt.Println("Институт не может быть пустым!")
+			inst := readLine(reader)
+			if err := checkText(inst); err != nil {
+				fmt.Println("Ошибка:", err)
 				fmt.Println("Для продолжения работы пожалуйста, нажмите Enter...")
-				reader.ReadString('\n')
+				readLine(reader)
 				clear_screen()
 				continue
 			}
 			student.institute = inst
 		case 4:
 			fmt.Print("Укажите стипендию студента: ")
-			stiStr, _ := reader.ReadString('\n')
-			stiStr = strings.TrimSpace(stiStr)
+			stiStr := readLine(reader)
 			sti, err := strconv.ParseFloat(stiStr, 32)
 			if err != nil || sti < 0 {
 				fmt.Println("Ошибка ввода стипендии. Введите неотрицательное число.")
 				fmt.Println("Для продолжения работы пожалуйста, нажмите Enter...")
-				reader.ReadString('\n')
+				readLine(reader)
 				clear_screen()
 				continue
 			}
 			student.stipend = float32(sti)
 		case 5:
 			fmt.Print("Укажите средний балл студента: ")
-			gpaStr, _ := reader.ReadString('\n')
-			gpaStr = strings.TrimSpace(gpaStr)
+			gpaStr := readLine(reader)
 			gpa, err := strconv.ParseFloat(gpaStr, 32)
 			if err != nil || gpa < 2 || gpa > 5 {
 				fmt.Println("Ошибка ввода среднего балла. Введите число от 2 до 5.")
 				fmt.Println("Для продолжения работы пожалуйста, нажмите Enter...")
-				reader.ReadString('\n')
+				readLine(reader)
 				clear_screen()
 				continue
 			}
@@ -107,7 +101,7 @@ func ChangeStudent(student *students, reader *bufio.Reader) {
 		default:
 			fmt.Println("Нет такого пункта меню!")
 			fmt.Println("Для продолжения работы пожалуйста, нажмите Enter...")
-			reader.ReadString('\n')
+			readLine(reader)
 			clear_screen()
 		}
 	}
