@@ -7,16 +7,16 @@ import (
 	"strings"
 )
 
-func StudentByID(students_list []students, id int) (students, error) {
+func StudentByID(students_list []students, id int) (*students, error) {
 	if id <= 0 {
-		return students{}, fmt.Errorf("Нет студента с ID = %d", id)
+		return nil, fmt.Errorf("Нет студента с ID = %d", id)
 	}
-	for _, st := range students_list {
-		if st.ID == uint(id) {
-			return st, nil
+	for i := range students_list {
+		if students_list[i].ID == uint(id) {
+			return &students_list[i], nil
 		}
 	}
-	return students{}, fmt.Errorf("Нет студента с ID = %d", id)
+	return nil, fmt.Errorf("Нет студента с ID = %d", id)
 }
 
 func ChangeStudent(student *students, reader *bufio.Reader) {
@@ -111,4 +111,18 @@ func ChangeStudent(student *students, reader *bufio.Reader) {
 			clear_screen()
 		}
 	}
+}
+
+// функция, которая удаляет студента с указанным ID и возвращает ошибку, если такого нет
+func DeleteStudentByID(students_list *[]students, id int) error {
+	if id <= 0 {
+		return fmt.Errorf("Нет студента с ID = %d", id)
+	}
+	for i, st := range *students_list {
+		if st.ID == uint(id) {
+			*students_list = append((*students_list)[:i], (*students_list)[i+1:]...)
+			return nil
+		}
+	}
+	return fmt.Errorf("Нет студента с ID = %d", id)
 }

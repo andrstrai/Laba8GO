@@ -274,6 +274,7 @@ func main() {
 		fmt.Println("6 - Показать студентов выбранного института")
 		fmt.Println("7 - Показать студентов со стипендией выше средней")
 		fmt.Println("8 - Изменить данные студента")
+		fmt.Println("9 - Удалить студента")
 		fmt.Println("0 - Завершить работу")
 		fmt.Println("Выберите пункт из меню управления: ")
 
@@ -324,7 +325,24 @@ func main() {
 				fmt.Println(err)
 				continue
 			}
-			ChangeStudent(&check_st, reader)
+			ChangeStudent(check_st, reader)
+		case 9:
+			fmt.Println("Список всех студентов:")
+			print_all(all_students)
+			fmt.Print("\nВведите ID студента для удаления: ")
+			input, _ := reader.ReadString('\n')
+			input = strings.TrimSpace(input)
+
+			del_id, err := strconv.Atoi(input)
+			if err != nil {
+				fmt.Println("Некорректный ввод! Пожалуйста, введите число.")
+				continue
+			}
+			if err := DeleteStudentByID(&all_students, del_id); err != nil {
+				fmt.Println(err)
+				continue
+			}
+			fmt.Printf("Студент с ID %d удален. Не забудьте сохранить изменения (пункт 5).\n", del_id)
 		default:
 			fmt.Println("Нет такого пункта меню!")
 		}
