@@ -268,10 +268,10 @@ func main() {
 		fmt.Println("7 - Показать студентов со стипендией выше средней")
 		fmt.Println("8 - Изменить данные студента")
 		fmt.Println("9 - Удалить студента")
-		fmt.Println("11 - Отчёт в файл: топ-10 по среднему баллу")
-		fmt.Println("12 - Отчёт в файл: стипендия выше средней")
-		fmt.Println("13 - Отчёт в файл: студенты выбранного института")
-		fmt.Println("14 - Отчёт в файл: сводка по институтам")
+		fmt.Println("10 - Отчёт в файл: топ-10 по среднему баллу")
+		fmt.Println("11 - Отчёт в файл: стипендия выше средней")
+		fmt.Println("12 - Отчёт в файл: студенты выбранного института")
+		fmt.Println("13 - Отчёт в файл: сводка по институтам")
 		fmt.Println("0 - Завершить работу")
 		fmt.Println("Выберите пункт из меню управления: ")
 
@@ -336,18 +336,18 @@ func main() {
 				continue
 			}
 			fmt.Printf("Студент с ID %d удален. Не забудьте сохранить изменения (пункт 5).\n", del_id)
-		case 11:
+		case 10:
 			err := ReportTop(all_students, 10, reportTopFile)
 			printReportResult(reportTopFile, err)
-		case 12:
+		case 11:
 			err := ReportAboveAverage(all_students, reportAboveAvgFile)
 			printReportResult(reportAboveAvgFile, err)
-		case 13:
+		case 12:
 			fmt.Print("Введите институт: ")
 			inst := readLine(reader)
 			err := ReportByInstitute(all_students, inst, reportInstituteFile)
 			printReportResult(reportInstituteFile, err)
-		case 14:
+		case 13:
 			err := ReportInstitutesSummary(all_students, reportSummaryFile)
 			printReportResult(reportSummaryFile, err)
 		default:
