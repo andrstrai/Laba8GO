@@ -24,7 +24,7 @@ type students struct {
 }
 
 // метод для вывода красивой строки стуктуры
-func (st students) ToString() string {
+func (st students) String() string {
 	return fmt.Sprintf("ID студента: %d\nИмя студента: %s\nДата рождения: %s\n"+
 		"Институт: %s\nСтипендия: %.2f\nСредний балл: %.2f",
 		st.ID, st.name, st.databirthday, st.institute, st.stipend, st.GPA)
@@ -273,6 +273,7 @@ func main() {
 		fmt.Println("5 - Сохранить изменения в файл")
 		fmt.Println("6 - Показать студентов выбранного института")
 		fmt.Println("7 - Показать студентов со стипендией выше средней")
+		fmt.Println("8 - Изменить данные студента")
 		fmt.Println("0 - Завершить работу")
 		fmt.Println("Выберите пункт из меню управления: ")
 
@@ -306,6 +307,24 @@ func main() {
 		case 7:
 			fmt.Printf("Средняя стипендия: %.2f\n", average_stipend(all_students))
 			print_all(filter_stipend_above_average(all_students))
+		case 8:
+			fmt.Println("Список всех студентов:")
+			print_all(all_students)
+			fmt.Println("\nВведите ID студента")
+			input, _ := reader.ReadString('\n')
+			input = strings.TrimSpace(input)
+
+			check_id, err := strconv.Atoi(input)
+			if err != nil {
+				fmt.Println("Некорректный ввод! Пожалуйста, введите число.")
+				continue
+			}
+			check_st, err := StudentByID(all_students, check_id)
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
+			ChangeStudent(&check_st, reader)
 		default:
 			fmt.Println("Нет такого пункта меню!")
 		}
